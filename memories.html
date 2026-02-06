@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Memories ✨🌸💫🌟</title>
+  <title>Our Memories 💕 </title>
   <style>
     body {
       margin: 0;
@@ -40,28 +40,34 @@
       max-width: 350px;
       border-radius: 15px;
       margin-bottom: 10px;
+      border: 1px solid rgba(255, 26, 117, 0.15);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.10);
+      background: rgba(255,255,255,0.65);
     }
 
     .caption {
       font-size: 0.9rem;
       color: #800000;
-      margin-bottom: 20px;
+      margin: 0 auto 20px;
+      width: 90%;
+      max-width: 350px;
+      line-height: 1.35;
     }
 
     .prev, .next {
       cursor: pointer;
       position: absolute;
-      top: 50%;
+      top: 42%;
       width: auto;
-      margin-top: -20px;
       padding: 10px;
       color: #800000;
       font-weight: bold;
       font-size: 2rem;
       border-radius: 50%;
-      background-color: #fff0f5;
+      background-color: rgba(255,240,245,0.9);
       user-select: none;
       transition: 0.3s;
+      border: 1px solid rgba(255, 26, 117, 0.18);
     }
 
     .prev:hover, .next:hover {
@@ -92,7 +98,7 @@
 </head>
 <body>
   <header>
-    <h1>Our Memories Together 🌸✨💫🌟</h1>
+    <h1>Our Memories Together 🌸🌟</h1>
     <p>Some of my favorite moments with you 💌</p>
   </header>
 
@@ -158,7 +164,7 @@
     const container = document.querySelector('.slideshow-container');
     container.addEventListener('touchstart', e => {
       startX = e.touches[0].clientX;
-    });
+    }, { passive: true });
 
     container.addEventListener('touchend', e => {
       endX = e.changedTouches[0].clientX;
@@ -168,7 +174,8 @@
       } else if (diff < -30) { // swipe right
         changeSlide(-1);
       }
-    });
+    }, { passive: true });
   </script>
+</body
 </body>
 </html>
