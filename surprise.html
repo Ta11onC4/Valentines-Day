@@ -13,7 +13,7 @@
       --pink4:#ff1a75;
       --cream:#fff7fb;
       --wine:#800000;
-      --cardShadow: 0 12px 25px rgba(0,0,0,0.14);
+      --cardShadow: 0 14px 28px rgba(0,0,0,0.14);
       --softBorder: 1px solid rgba(255,26,117,0.22);
     }
 
@@ -68,17 +68,33 @@
     }
 
     .card{
-      width: min(520px, 92vw);
-      background: rgba(255,255,255,0.6);
+      width: min(620px, 92vw);
+      background: rgba(255,255,255,0.62);
       border: var(--softBorder);
       border-radius: 18px;
       box-shadow: var(--cardShadow);
       padding: 18px 14px;
       backdrop-filter: blur(6px);
+      position: relative;
+      overflow: hidden;
     }
 
+    /* Cute subtle background shapes inside cards */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-80px;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(255,77,148,0.20), transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(255,153,200,0.25), transparent 42%),
+        radial-gradient(circle at 70% 85%, rgba(255,26,117,0.12), transparent 45%);
+      pointer-events:none;
+    }
+
+    .card > * { position: relative; }
+
     .question{
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: bold;
       color:#7a0012;
       margin: 0 0 14px;
@@ -98,15 +114,15 @@
       gap: 10px;
       padding: 12px 12px;
       border-radius: 14px;
-      background: linear-gradient(135deg, rgba(255,204,217,0.65), rgba(255,153,200,0.50));
+      background: linear-gradient(135deg, rgba(255,204,217,0.75), rgba(255,153,200,0.60));
       border: 1px solid rgba(255,77,148,0.22);
       cursor: pointer;
       user-select:none;
-      transition: transform 120ms ease, box-shadow 120ms ease;
+      transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
     }
 
     .choice:active{ transform: scale(0.99); }
-    .choice:hover{ box-shadow: 0 10px 18px rgba(0,0,0,0.10); }
+    .choice:hover{ box-shadow: 0 10px 18px rgba(0,0,0,0.10); filter: brightness(1.02); }
 
     .choice-left{
       display:flex;
@@ -128,7 +144,7 @@
       width: 24px;
       height: 24px;
       border-radius: 7px;
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.80);
       border: 2px solid rgba(255,26,117,0.30);
       display:flex;
       align-items:center;
@@ -150,50 +166,88 @@
       line-height: 1.35;
     }
 
-    /* NO screen */
+    /* NO pop-up overlay (shows briefly then returns) */
+    .no-overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display:none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      padding: 20px;
+    }
+
+    .no-pop{
+      width: min(420px, 92vw);
+      background: rgba(255,255,255,0.92);
+      border-radius: 18px;
+      border: 1px solid rgba(255,26,117,0.18);
+      box-shadow: 0 16px 34px rgba(0,0,0,0.22);
+      padding: 18px 14px;
+      animation: popIn 220ms ease-out;
+    }
+
+    @keyframes popIn{
+      from{ transform: scale(0.92); opacity: 0; }
+      to{ transform: scale(1); opacity: 1; }
+    }
+
     .no-face{
-      font-size: 5rem;
+      font-size: 4.5rem;
       margin: 0;
     }
     .no-text{
-      font-size: 1.8rem;
+      font-size: 1.7rem;
       font-weight: bold;
-      margin: 0;
+      margin: 6px 0 0;
       color:#7a0012;
     }
     .no-sub{
-      margin: 0;
+      margin: 8px 0 0;
       color:#9a0f2f;
       line-height: 1.35;
     }
-    .funny-btn{
-      margin-top: 10px;
-      border: none;
-      background: linear-gradient(135deg, var(--pink3), var(--pink4));
-      color: white;
-      padding: 12px 14px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 10px 18px rgba(255,26,117,0.20);
-      transition: transform 120ms ease, filter 120ms ease;
-      min-width: 180px;
-    }
-    .funny-btn:active{ transform: scale(0.98); }
-    .funny-btn:hover{ filter: brightness(1.05); }
 
     /* LOCK screen */
+    .lock-badge{
+      display:inline-block;
+      background: linear-gradient(135deg, var(--pink3), var(--pink4));
+      color: white;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 999px;
+      box-shadow: 0 10px 18px rgba(255,26,117,0.18);
+      margin-bottom: 10px;
+    }
+
     .lock-title{
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: bold;
       color:#7a0012;
-      margin: 0 0 6px;
+      margin: 0 0 8px;
     }
-    .lock-hint{
+
+    .lock-story{
       margin: 0 0 14px;
       color:#9a0f2f;
-      line-height: 1.35;
+      line-height: 1.4;
+      font-size: 0.95rem;
     }
+
+    .hint-box{
+      width: min(520px, 92vw);
+      margin: 0 auto 14px;
+      background: rgba(255,255,255,0.70);
+      border: 1px dashed rgba(255,26,117,0.28);
+      border-radius: 16px;
+      padding: 12px 12px;
+      color:#7a0012;
+      line-height: 1.35;
+      text-align: left;
+    }
+
+    .hint-box strong{ color:#b0123a; }
 
     .password-wrap{
       display:flex;
@@ -205,13 +259,14 @@
     }
 
     .password-input{
-      width: min(280px, 75vw);
+      width: min(300px, 78vw);
       padding: 12px 12px;
       border-radius: 14px;
       border: 1px solid rgba(255,26,117,0.25);
       outline: none;
       font-size: 1rem;
-      background: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.90);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.06);
     }
 
     .unlock-btn{
@@ -243,9 +298,16 @@
       text-align:left;
       padding: 14px;
       border-radius: 16px;
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.78);
       border: 1px solid rgba(255,26,117,0.18);
+      animation: revealIn 260ms ease-out;
     }
+
+    @keyframes revealIn{
+      from{ transform: translateY(10px); opacity: 0; }
+      to{ transform: translateY(0); opacity: 1; }
+    }
+
     .reveal h3{
       margin: 0 0 8px;
       color:#7a0012;
@@ -294,6 +356,15 @@
   <!-- Confetti -->
   <canvas id="confetti" class="confetti"></canvas>
 
+  <!-- NO overlay popup -->
+  <div class="no-overlay" id="noOverlay" aria-hidden="true">
+    <div class="no-pop">
+      <p class="no-face">☹️</p>
+      <p class="no-text">Aw man</p>
+      <p class="no-sub" id="noSub">I’m gonna pretend I didn’t see that 😅</p>
+    </div>
+  </div>
+
   <!-- SCREEN 1: Question -->
   <section id="screenAsk" class="screen">
     <div class="card">
@@ -319,21 +390,20 @@
     </div>
   </section>
 
-  <!-- SCREEN 2: NO -->
-  <section id="screenNo" class="screen hidden">
-    <div class="card">
-      <p class="no-face">☹️</p>
-      <p class="no-text">Aw man</p>
-      <p class="no-sub" id="noSub">I’m gonna pretend I didn’t see that 😅</p>
-      <button class="funny-btn" id="tryAgainBtn">Okay okay, try again</button>
-    </div>
-  </section>
-
-  <!-- SCREEN 3: LOCK -->
+  <!-- SCREEN 2: LOCK -->
   <section id="screenLock" class="screen hidden">
     <div class="card">
-      <p class="lock-title">Locked Surprise 🔒</p>
-      <p class="lock-hint">Hint: our anniversary date (type it exactly)</p>
+      <div class="lock-badge">MISSION: RECOVER THE SURPRISE</div>
+      <p class="lock-title">Oh no! The surprise has been stolen! 😱</p>
+      <p class="lock-story">
+        A sneaky Valentine Roxygirl 🐶 ran off with your gift.
+        The only way to get it back is to enter the correct password and unlock the vault.
+      </p>
+
+      <div class="hint-box">
+        <strong>Hint:</strong> It’s our anniversary date. Type it exactly how we always write it.
+        <br><strong>Example formats:</strong> 06/12/2016 • 06122016 • June 12
+      </div>
 
       <div class="password-wrap">
         <input
@@ -349,7 +419,7 @@
       <p class="error" id="errorMsg">Nope 😅 try again (hint: anniversary date)</p>
 
       <div class="reveal" id="revealBox">
-        <h3>Our Date Info 💖</h3>
+        <h3>Recovered! 💖 Here’s our date info:</h3>
         <p><strong>Anniversary:</strong> <span id="annivOut">[set this]</span></p>
         <p><strong>Tonight’s plan:</strong> <span id="planOut">[set this]</span></p>
         <p><strong>Message:</strong> <span id="msgOut">[set this]</span></p>
@@ -371,23 +441,22 @@
     // ✅ EDIT THESE VALUES
     // ===========================
     // Password is whatever you want her to type.
-    // Example formats: "06/12/2016" or "06122016" or "June 12"
-    const CORRECT_PASSWORD = "06/12/2016";
+    // Tip: pick ONE format and keep the hint consistent
+    const CORRECT_PASSWORD = "11/17/2023";
 
     // What shows after she unlocks:
-    const ANNIVERSARY_TEXT = "06/12/2016";
-    const PLAN_TEXT = "Dinner + dessert + a movie together";
+    const ANNIVERSARY_TEXT = "11/17/2023";
+    const PLAN_TEXT = "Dinner Together";
     const MESSAGE_TEXT = "I love you more than words. Happy Valentine’s Day ❤️";
     // ===========================
 
     const screenAsk = document.getElementById("screenAsk");
-    const screenNo = document.getElementById("screenNo");
     const screenLock = document.getElementById("screenLock");
 
     const choiceYes = document.getElementById("choiceYes");
     const choiceNo = document.getElementById("choiceNo");
 
-    const tryAgainBtn = document.getElementById("tryAgainBtn");
+    const noOverlay = document.getElementById("noOverlay");
     const noSub = document.getElementById("noSub");
 
     const password = document.getElementById("password");
@@ -418,14 +487,15 @@
       }, 720);
     }
 
-    function setSelected(which){
-      // Clear both
+    function clearSelection(){
       choiceYes.classList.remove("selected");
       choiceNo.classList.remove("selected");
       choiceYes.querySelector(".fake-checkbox").textContent = "";
       choiceNo.querySelector(".fake-checkbox").textContent = "";
+    }
 
-      // Set selected
+    function setSelected(which){
+      clearSelection();
       which.classList.add("selected");
       which.querySelector(".fake-checkbox").textContent = "✓";
     }
@@ -433,52 +503,45 @@
     // --- YES path ---
     function handleYes(){
       setSelected(choiceYes);
-      // dissolve to lock screen
       setTimeout(() => dissolveTo(screenAsk, screenLock), 200);
-      // focus password after transition
       setTimeout(() => password.focus(), 950);
     }
 
-    // --- NO path ---
-    function handleNo(){
-      setSelected(choiceNo);
-      setTimeout(() => dissolveTo(screenAsk, screenNo), 200);
-    }
-
-    choiceYes.addEventListener("click", handleYes);
-    choiceNo.addEventListener("click", handleNo);
-
-    // keyboard support
-    choiceYes.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") handleYes(); });
-    choiceNo.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") handleNo(); });
-
-    // Funny NO button: cycles messages
+    // --- NO path (popup for a few seconds then return) ---
     const funnyLines = [
-      "I’m gonna pretend I didn’t see that 😅",
-      "Wrong button, ma’am 😂",
-      "That button is broken… try the other one 😇",
-      "This page is now sad. Very sad. ☹️",
-      "Okay okay… I forgive you. Try again 💖"
+      "I’m gonna pretend I didn’t see that ",
+      "Wrong button, ma’am ",
+      "That button is broken… try the other one ",
+      "The page is now sad. Very sad. ☹️",
+      "Okay okay… I forgive you "
     ];
     let funnyIndex = 0;
+    let noTimer = null;
 
-    tryAgainBtn.addEventListener("click", () => {
+    function showNoPopup(){
+      setSelected(choiceNo);
+
       funnyIndex = (funnyIndex + 1) % funnyLines.length;
       noSub.textContent = funnyLines[funnyIndex];
 
-      // Send back to question after a couple clicks
-      if (funnyIndex === 0) {
-        // gentle dissolve back
-        dissolveTo(screenNo, screenAsk);
-        // clear selection
-        setTimeout(() => {
-          choiceYes.classList.remove("selected");
-          choiceNo.classList.remove("selected");
-          choiceYes.querySelector(".fake-checkbox").textContent = "";
-          choiceNo.querySelector(".fake-checkbox").textContent = "";
-        }, 800);
-      }
-    });
+      noOverlay.style.display = "flex";
+      noOverlay.setAttribute("aria-hidden", "false");
+
+      // After 2.5 seconds: hide popup and return to checkboxes
+      if (noTimer) clearTimeout(noTimer);
+      noTimer = setTimeout(() => {
+        noOverlay.style.display = "none";
+        noOverlay.setAttribute("aria-hidden", "true");
+        clearSelection();
+      }, 2500);
+    }
+
+    choiceYes.addEventListener("click", handleYes);
+    choiceNo.addEventListener("click", showNoPopup);
+
+    // keyboard support
+    choiceYes.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") handleYes(); });
+    choiceNo.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") showNoPopup(); });
 
     // Unlock logic
     function normalize(s){
@@ -501,7 +564,8 @@
       } else {
         errorMsg.style.display = "block";
         revealBox.style.display = "none";
-        // little shake effect
+
+        // little shake
         password.animate(
           [
             { transform: "translateX(0px)" },
@@ -522,17 +586,15 @@
     });
 
     // Confetti (simple + pretty)
-    let confettiPieces = [];
-    let confettiTimer = null;
-
     function launchConfetti(){
       confettiCanvas.style.display = "block";
-      confettiPieces = [];
-      const colors = ["#ff4d94", "#ff1a75", "#ffffff", "#ffd1e6", "#ff99c8"];
 
+      const pieces = [];
+      const colors = ["#ff4d94", "#ff1a75", "#ffffff", "#ffd1e6", "#ff99c8"];
       const count = 180;
+
       for (let i = 0; i < count; i++){
-        confettiPieces.push({
+        pieces.push({
           x: Math.random() * confettiCanvas.width,
           y: -20 - Math.random() * confettiCanvas.height * 0.3,
           w: 6 + Math.random() * 8,
@@ -552,7 +614,7 @@
         const elapsed = t - start;
         ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
 
-        confettiPieces.forEach(p => {
+        pieces.forEach(p => {
           p.x += p.vx;
           p.y += p.vy;
           p.rot += p.vr;
@@ -565,7 +627,6 @@
           ctx.restore();
         });
 
-        // keep drawing
         if (elapsed < duration){
           requestAnimationFrame(frame);
         } else {
