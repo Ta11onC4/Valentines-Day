@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reasons I Love You 💖</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #ffe6f0;
+      color: #800000;
+      padding-bottom: 80px; /* space for bottom nav */
+    }
+
+    header {
+      padding: 20px;
+    }
+
+    header h1 {
+      color: #ff4d94;
+      margin-bottom: 10px;
+    }
+
+    /* Container for cards */
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 10px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    /* Individual card style */
+    .card {
+      background: linear-gradient(135deg, #ffccd9, #ff99c8);
+      border-radius: 15px;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      color: #800000;
+      position: relative;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .card-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .card-text {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      display: none; /* hidden by default */
+      line-height: 1.4;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #ffe6f0;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: #800000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Reasons I Love You</h1>
+    <p>Click on each card to see why you’re so special 💌</p>
+  </header>
+
+  <div class="cards-container">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-title">Your Smile</div>
+      <div class="card-text">It lights up every room and makes my day brighter.</div>
+    </div>
+
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-title">Your Laugh</div>
+      <div class="card-text">It’s contagious and always makes me happy.</div>
+    </div>
+
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-title">Your Kindness</div>
+      <div class="card-text">You care about everyone around you, including me.</div>
+    </div>
+
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-title">Our Adventures</div>
+      <div class="card-text">Every trip and silly moment with you is unforgettable.</div>
+    </div>
+
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-title">Your Support</div>
+      <div class="card-text">You always have my back no matter what.</div>
+    </div>
+
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-title">Your Creativity</div>
+      <div class="card-text">You inspire me to see the world in new ways every day.</div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="index.html">🏠 Home</a>
+    <a href="memories.html">📸 Memories</a>
+    <a href="love.html">💖 Love</a>
+    <a href="music.html">🎵 Music</a>
+    <a href="surprise.html">🎁 Surprise</a>
+  </nav>
+
+  <script>
+    function toggleCard(card) {
+      const text = card.querySelector('.card-text');
+      if (text.style.display === 'block') {
+        text.style.display = 'none';
+      } else {
+        text.style.display = 'block';
+        text.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  </script>
+</body>
+</html>
