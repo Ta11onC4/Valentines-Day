@@ -7,15 +7,17 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
-      background: #fff0f5;
+      background: #ffe6f0;
       color: #800000;
-      padding-bottom: 80px; /* for bottom nav */
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 80px;
     }
 
     header {
+      text-align: center;
       padding: 20px;
     }
 
@@ -24,67 +26,102 @@
       margin-bottom: 10px;
     }
 
-    /* Music player container */
-    .music-player {
+    .player-container {
       background: linear-gradient(135deg, #ffccd9, #ff99c8);
       border-radius: 15px;
-      max-width: 350px;
-      margin: 20px auto;
+      width: 320px;
       padding: 15px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0;
     }
 
-    .player-info {
+    .song-info {
+      display: flex;
+      width: 100%;
       margin-bottom: 10px;
-      font-weight: bold;
     }
 
-    /* Buttons */
-    .player-buttons {
+    .album-art {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+
+    .song-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #800000;
+    }
+
+    .song-details .title {
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+    }
+
+    .song-details .artist {
+      font-size: 0.85rem;
+      color: #ff1a75;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: #fff;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 0 5px;
+    }
+
+    .progress {
+      height: 100%;
+      background: #ff4d94;
+      width: 0%;
+      border-radius: 3px;
+    }
+
+    .time {
+      font-size: 0.75rem;
+      color: #800000;
+      width: 40px;
+      text-align: center;
+    }
+
+    /* Control buttons */
+    .controls {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 10px;
+      width: 100%;
+      margin-top: 5px;
     }
 
-    .player-buttons button {
+    .controls button {
       background: #ff4d94;
       border: none;
-      border-radius: 5px;
-      color: #fff;
-      font-size: 1rem;
+      color: white;
       padding: 8px 12px;
+      border-radius: 5px;
       cursor: pointer;
       transition: background 0.3s;
     }
 
-    .player-buttons button:hover {
+    .controls button:hover {
       background: #ff1a75;
-    }
-
-    /* Track list */
-    .track-list {
-      max-height: 120px;
-      overflow-y: auto;
-      text-align: left;
-      background: #ffe6f0;
-      border-radius: 10px;
-      padding: 10px;
-    }
-
-    .track-list div {
-      padding: 5px 0;
-      cursor: pointer;
-      border-bottom: 1px solid #ff99c8;
-    }
-
-    .track-list div:last-child {
-      border-bottom: none;
-    }
-
-    .track-list .active {
-      font-weight: bold;
-      color: #ff1a75;
     }
 
     /* Bottom nav */
@@ -92,7 +129,7 @@
       position: fixed;
       bottom: 0;
       width: 100%;
-      background: #fff0f5;
+      background: #ffe6f0;
       display: flex;
       justify-content: space-around;
       padding: 10px 0;
@@ -109,22 +146,38 @@
 <body>
   <header>
     <h1>Music Player</h1>
-    <p>Tap a song and enjoy some tunes 💖</p>
+    <p>Listen to our favorite songs 💖</p>
   </header>
 
-  <div class="music-player">
-    <div class="player-info" id="current-track">Select a song</div>
-    <div class="player-buttons">
+  <div class="player-container">
+    <div class="song-info">
+      <img src="music/album1.jpg" alt="Album Art" class="album-art" id="album-art">
+      <div class="song-details">
+        <div class="title" id="song-title">Select a song</div>
+        <div class="artist" id="song-artist">-</div>
+      </div>
+    </div>
+
+    <div class="progress-container">
+      <div class="time" id="current-time">0:00</div>
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+      <div class="time" id="duration">0:00</div>
+    </div>
+
+    <div class="controls">
       <button onclick="prevTrack()">⏮️</button>
       <button onclick="togglePlay()">▶️ / ⏸️</button>
       <button onclick="nextTrack()">⏭️</button>
     </div>
-    <audio id="audio" preload="metadata"></audio>
-    <div class="track-list" id="track-list">
-      <div onclick="selectTrack(0)">Song 1 - My Favorite ❤️</div>
-      <div onclick="selectTrack(1)">Song 2 - Sweet Memories 🌸</div>
-      <div onclick="selectTrack(2)">Song 3 - Forever Together 💫</div>
-    </div>
+  </div>
+
+  <!-- Track List -->
+  <div class="track-list" id="track-list">
+    <div onclick="selectTrack(0)">Song 1 - My Favorite ❤️</div>
+    <div onclick="selectTrack(1)">Song 2 - Sweet Memories 🌸</div>
+    <div onclick="selectTrack(2)">Song 3 - Forever Together 💫</div>
   </div>
 
   <!-- Bottom Navigation -->
@@ -136,15 +189,22 @@
     <a href="surprise.html">🎁 Surprise</a>
   </nav>
 
+  <audio id="audio"></audio>
+
   <script>
     const audio = document.getElementById('audio');
-    const currentTrack = document.getElementById('current-track');
+    const songTitle = document.getElementById('song-title');
+    const songArtist = document.getElementById('song-artist');
+    const albumArt = document.getElementById('album-art');
+    const progress = document.getElementById('progress');
+    const currentTimeElem = document.getElementById('current-time');
+    const durationElem = document.getElementById('duration');
     const trackListDiv = document.getElementById('track-list').children;
 
     const tracks = [
-      { title: "Song 1 - My Favorite ❤️", src: "music/song1.mp3" },
-      { title: "Song 2 - Sweet Memories 🌸", src: "music/song2.mp3" },
-      { title: "Song 3 - Forever Together 💫", src: "music/song3.mp3" }
+      { title: "Song 1 - My Favorite ❤️", artist: "By Me", src: "music/song1.mp3", album: "Love Album", img: "music/album1.jpg" },
+      { title: "Song 2 - Sweet Memories 🌸", artist: "By Me", src: "music/song2.mp3", album: "Love Album", img: "music/album2.jpg" },
+      { title: "Song 3 - Forever Together 💫", artist: "By Me", src: "music/song3.mp3", album: "Love Album", img: "music/album3.jpg" }
     ];
 
     let currentIndex = 0;
@@ -153,6 +213,9 @@
     function selectTrack(index) {
       currentIndex = index;
       audio.src = tracks[index].src;
+      albumArt.src = tracks[index].img;
+      songTitle.textContent = tracks[index].title;
+      songArtist.textContent = tracks[index].artist;
       audio.play();
       isPlaying = true;
       updateUI();
@@ -181,14 +244,28 @@
     }
 
     function updateUI() {
-      currentTrack.textContent = tracks[currentIndex].title;
       for (let i = 0; i < trackListDiv.length; i++) {
         trackListDiv[i].classList.remove('active');
       }
       trackListDiv[currentIndex].classList.add('active');
     }
 
-    // Auto-next when track ends
+    // Update progress bar
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progress.style.width = percent + '%';
+        currentTimeElem.textContent = formatTime(audio.currentTime);
+        durationElem.textContent = formatTime(audio.duration);
+      }
+    });
+
+    function formatTime(seconds) {
+      const min = Math.floor(seconds / 60);
+      const sec = Math.floor(seconds % 60).toString().padStart(2,'0');
+      return `${min}:${sec}`;
+    }
+
     audio.addEventListener('ended', nextTrack);
   </script>
 </body>
