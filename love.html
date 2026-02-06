@@ -68,22 +68,32 @@
       line-height: 1.4;
     }
 
-    /* Sparkles */
+    /* Sparkle style */
     .sparkle {
       position: absolute;
-      width: 6px;
-      height: 6px;
-      background: radial-gradient(circle, #fff 0%, #ff4d94 80%);
-      border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      background: linear-gradient(45deg, #fff, #ff4d94);
+      transform: rotate(45deg);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
       opacity: 0;
       pointer-events: none;
-      animation: flyUp 1s forwards;
+      animation: sparkleAnim 1s forwards;
     }
 
-    @keyframes flyUp {
-      0% { transform: translate(0, 0) scale(1); opacity: 1; }
-      50% { transform: translate(var(--x), -50px) scale(1.2); opacity: 1; }
-      100% { transform: translate(var(--x), -100px) scale(0.5); opacity: 0; }
+    @keyframes sparkleAnim {
+      0% {
+        transform: translate(0,0) rotate(var(--rot)) scale(var(--scale));
+        opacity: 1;
+      }
+      50% {
+        transform: translate(var(--x), var(--yMid)) rotate(var(--rot)) scale(var(--scale));
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--x), var(--yEnd)) rotate(var(--rot)) scale(0);
+        opacity: 0;
+      }
     }
 
     /* Bottom nav */
@@ -164,21 +174,32 @@
       }
     }
 
-    // Sparkle effect
     function createSparkles(card) {
-      const num = 15; // number of sparkles
+      const num = 20; // number of sparkles
       for (let i = 0; i < num; i++) {
         const sparkle = document.createElement('div');
         sparkle.classList.add('sparkle');
-        const x = (Math.random() - 0.5) * 100; // random horizontal movement
-        sparkle.style.setProperty('--x', x + 'px');
-        sparkle.style.left = Math.random() * card.offsetWidth + 'px';
+
+        // Random horizontal displacement
+        const x = (Math.random() - 0.5) * 150 + 'px';
+        const yMid = -(Math.random() * 50 + 20) + 'px'; 
+        const yEnd = -(Math.random() * 120 + 80) + 'px'; 
+
+        const scale = (Math.random() * 0.7 + 0.5).toFixed(2);
+        const rot = (Math.random() * 360).toFixed(0) + 'deg';
+
+        sparkle.style.setProperty('--x', x);
+        sparkle.style.setProperty('--yMid', yMid);
+        sparkle.style.setProperty('--yEnd', yEnd);
+        sparkle.style.setProperty('--scale', scale);
+        sparkle.style.setProperty('--rot', rot);
+
+        // Position at random x inside card bottom
+        sparkle.style.left = (Math.random() * (card.offsetWidth - 10)) + 'px';
         sparkle.style.top = card.offsetHeight + 'px';
+
         card.appendChild(sparkle);
-        // Remove sparkle after animation
-        sparkle.addEventListener('animationend', () => {
-          sparkle.remove();
-        });
+        sparkle.addEventListener('animationend', () => sparkle.remove());
       }
     }
   </script>
