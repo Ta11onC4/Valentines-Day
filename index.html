@@ -25,6 +25,7 @@
       text-align:center;
       overflow-x:hidden;
       padding-bottom: 90px; /* space for bottom nav */
+      transition: filter 600ms ease, transform 600ms ease;
     }
 
     header{
@@ -41,9 +42,12 @@
       margin: 0;
       color:#9a0f2f;
       line-height: 1.35;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    /* Jumping heart banner area (kept simple) */
+    /* Jumping heart banner area */
     .banner{
       margin: 12px auto 0;
       width: min(720px, 92vw);
@@ -119,36 +123,7 @@
       font-size: 0.95rem;
     }
 
-    .heart-btn{
-      border: none;
-      width: min(340px, 86vw);
-      margin: 0 auto 14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 10px;
-      padding: 14px 14px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, var(--pink3), var(--pink4));
-      color: white;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 14px 26px rgba(255,26,117,0.22);
-      transition: transform 120ms ease, filter 120ms ease;
-    }
-    .heart-btn:active{ transform: scale(0.98); }
-    .heart-btn:hover{ filter: brightness(1.05); }
-
-    .big-heart{
-      font-size: 1.2rem;
-      animation: thump 1.15s ease-in-out infinite;
-    }
-    @keyframes thump{
-      0%, 100%{ transform: scale(1); }
-      50%{ transform: scale(1.18); }
-    }
-
+    /* ✅ click the meter itself */
     .meter-shell{
       width: min(520px, 90%);
       margin: 0 auto;
@@ -156,9 +131,15 @@
       border: 1px solid rgba(255,26,117,0.18);
       border-radius: 999px;
       overflow: hidden;
-      height: 16px;
+      height: 18px;
       box-shadow: inset 0 2px 10px rgba(0,0,0,0.06);
       position: relative;
+      cursor: pointer;
+      user-select:none;
+    }
+
+    .meter-shell:active{
+      transform: scale(0.995);
     }
 
     .meter-fill{
@@ -166,7 +147,7 @@
       width: 0%;
       background: linear-gradient(90deg, var(--pink2), var(--pink3), var(--pink4));
       border-radius: 999px;
-      transition: width 260ms ease;
+      transition: width 240ms ease;
     }
 
     .meter-label-row{
@@ -182,7 +163,7 @@
       margin: 12px 0 0;
       font-weight: bold;
       color:#7a0012;
-      min-height: 24px;
+      min-height: 26px;
       padding: 0 6px;
     }
 
@@ -209,6 +190,43 @@
       100% { opacity: 0; transform: translateY(-40px) scale(1.25) rotate(16deg); }
     }
 
+    /* ===== Love Explosion (mess up the page) ===== */
+    .chaos{
+      animation: chaosShake 220ms linear infinite;
+      filter: hue-rotate(20deg) saturate(1.1);
+    }
+
+    @keyframes chaosShake{
+      0%{ transform: translate(0,0) rotate(0deg); }
+      25%{ transform: translate(2px,-1px) rotate(-0.3deg); }
+      50%{ transform: translate(-2px,1px) rotate(0.3deg); }
+      75%{ transform: translate(1px,2px) rotate(-0.2deg); }
+      100%{ transform: translate(-1px,-2px) rotate(0.2deg); }
+    }
+
+    .explosion-overlay{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      z-index: 2000;
+      overflow: hidden;
+    }
+
+    .boom{
+      position: absolute;
+      font-size: 22px;
+      opacity: 0;
+      animation: boomFly 900ms ease-out forwards;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,0.12));
+    }
+
+    @keyframes boomFly{
+      0%   { opacity: 0; transform: translateY(10px) scale(0.6) rotate(0deg); }
+      15%  { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-80px) scale(1.6) rotate(22deg); }
+    }
+
     /* Bottom nav */
     .bottom-nav{
       position: fixed;
@@ -231,8 +249,8 @@
 </head>
 <body>
   <header>
-    <h1>Welcome to Our Special Page</h1>
-    <p>Happy Valentine’s Day 💖</p>
+    <h1>Happy Valentine’s Day!</h1>
+    <p>I wanted to do something different this year. I hope this webpage can express how much you truly mean to me.</p>
   </header>
 
   <!-- Jumping hearts banner -->
@@ -250,15 +268,9 @@
   <!-- Heart Meter -->
   <section class="meter-wrap">
     <h2 class="meter-title">Love Meter</h2>
-    <p class="meter-sub">Tap the button to measure how much I love you… (warning: it might break 😄)</p>
+    <p class="meter-sub">Tap the meter to add love in tiny doses… please do not spam it 😅</p>
 
-    <button class="heart-btn" id="heartBtn">
-      <span class="big-heart">💗</span>
-      Tap to Add Love
-      <span class="big-heart">💗</span>
-    </button>
-
-    <div class="meter-shell" aria-label="Love meter progress bar">
+    <div class="meter-shell" id="meterShell" aria-label="Love meter progress bar (tap to add love)">
       <div class="meter-fill" id="meterFill"></div>
     </div>
 
@@ -272,6 +284,9 @@
     <div class="status" id="statusText">Status: ready for scientific testing 🧪</div>
   </section>
 
+  <!-- Love explosion overlay -->
+  <div class="explosion-overlay" id="explosionOverlay"></div>
+
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <a href="index.html">🏠 Home</a>
@@ -282,91 +297,132 @@
   </nav>
 
   <script>
-    // Heart meter logic
-    const heartBtn = document.getElementById("heartBtn");
+    const meterShell = document.getElementById("meterShell");
     const meterFill = document.getElementById("meterFill");
     const statusText = document.getElementById("statusText");
     const pops = document.getElementById("pops");
+    const explosionOverlay = document.getElementById("explosionOverlay");
 
     let love = 0;
-    let broke = false;
+    let exploded = false;
 
-    const lines = [
+    // ✅ small increments + many messages
+    const messages = [
       "Status: ready for scientific testing 🧪",
-      "Status: love levels rising… 📈",
-      "Status: okay wow… that’s a lot 😳",
-      "Status: ma’am, the meter is sweating 😅",
-      "Status: approaching maximum capacity… ⚠️",
+      "Status: love added… aww 🥹",
+      "Status: that’s sweet. keep going 💗",
+      "Status: love levels rising 📈",
+      "Status: you’re kinda perfect, you know that? 😌",
+      "Status: this is getting dangerously romantic 😳",
+      "Status: maximum cuddle energy detected 🧸",
+      "Status: approaching full capacity… ⚠️",
+      "Status: okay okay… you’re breaking the meter 😅",
       "Status: ERROR — love exceeds capacity 💥💖"
     ];
+
+    // anti-spam: too many clicks too fast -> explosion
+    let clickTimes = [];
 
     function setStatus(msg){
       statusText.textContent = msg;
     }
 
     function popHearts(){
-      // small burst near the bar
       pops.innerHTML = "";
-      const emojis = ["💖","💗","💞","✨","💘"];
-      const count = 10;
+      const emojis = ["💖","💗","💞","✨","💘","🌟"];
+      const count = 8;
 
       for (let i = 0; i < count; i++){
         const p = document.createElement("div");
         p.className = "pop";
         p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        p.style.left = (10 + Math.random() * 80) + "%";
+        p.style.left = (12 + Math.random() * 76) + "%";
         p.style.animationDelay = (Math.random() * 120) + "ms";
-        p.style.fontSize = (14 + Math.random() * 14) + "px";
+        p.style.fontSize = (14 + Math.random() * 12) + "px";
         pops.appendChild(p);
       }
     }
 
     function updateMeter(){
-      // allow overflow visually up to 115% for the "break" gag
       const width = Math.min(love, 115);
       meterFill.style.width = width + "%";
 
-      if (love < 25) setStatus(lines[1]);
-      else if (love < 55) setStatus(lines[2]);
-      else if (love < 85) setStatus(lines[3]);
-      else if (love < 100) setStatus(lines[4]);
-      else setStatus(lines[5]);
+      // choose message based on love %
+      if (love < 10) setStatus(messages[1]);
+      else if (love < 25) setStatus(messages[2]);
+      else if (love < 40) setStatus(messages[3]);
+      else if (love < 55) setStatus(messages[4]);
+      else if (love < 70) setStatus(messages[5]);
+      else if (love < 85) setStatus(messages[6]);
+      else if (love < 95) setStatus(messages[7]);
+      else if (love < 100) setStatus(messages[8]);
+      else setStatus(messages[9]);
     }
 
-    function breakMeter(){
-      broke = true;
-      setStatus(lines[5]);
-      // quick shake
-      document.querySelector(".meter-wrap").animate(
-        [
-          { transform: "translateX(0px)" },
-          { transform: "translateX(-8px)" },
-          { transform: "translateX(8px)" },
-          { transform: "translateX(-6px)" },
-          { transform: "translateX(6px)" },
-          { transform: "translateX(0px)" }
-        ],
-        { duration: 420, easing: "ease-in-out" }
-      );
+    function loveExplosion(){
+      exploded = true;
+      setStatus("LOVE EXPLOSION 💥💖 (you clicked too fast!)");
+
+      // mess up page a bit
+      document.body.classList.add("chaos");
+
+      // create flying emojis everywhere
+      explosionOverlay.style.display = "block";
+      explosionOverlay.innerHTML = "";
+
+      const boomEmojis = ["💥","💖","💘","✨","🌟","💞","💕"];
+      const count = 90;
+
+      for (let i = 0; i < count; i++){
+        const b = document.createElement("div");
+        b.className = "boom";
+        b.textContent = boomEmojis[Math.floor(Math.random() * boomEmojis.length)];
+        b.style.left = (Math.random() * 100) + "%";
+        b.style.top = (60 + Math.random() * 35) + "%";
+        b.style.animationDelay = (Math.random() * 200) + "ms";
+        b.style.fontSize = (14 + Math.random() * 26) + "px";
+        explosionOverlay.appendChild(b);
+      }
+
+      // after a bit, calm it down (but still “messed up” enough to be funny)
+      setTimeout(() => {
+        document.body.classList.remove("chaos");
+        explosionOverlay.style.display = "none";
+        setStatus("Status: okay… I fixed it 😅 (but I still love you too much)");
+      }, 2500);
+    }
+
+    meterShell.addEventListener("click", () => {
+      if (exploded){
+        popHearts();
+        setStatus("Status: the meter is traumatized… please be gentle 😭💗");
+        return;
+      }
+
+      // track click speed
+      const now = Date.now();
+      clickTimes = clickTimes.filter(t => now - t < 1200); // last 1.2s
+      clickTimes.push(now);
+
+      // if spamming: explode
+      if (clickTimes.length >= 9){
+        loveExplosion();
+        return;
+      }
+
+      // small increments (more clicks, more messages)
+      love += 3; // ✅ small increments
       popHearts();
-    }
+      updateMeter();
 
-    heartBtn.addEventListener("click", () => {
-      if (!broke){
-        // add a random amount each tap for fun
-        love += 8 + Math.floor(Math.random() * 14); // 8–21
-        popHearts();
-        updateMeter();
-
-        if (love >= 100){
-          breakMeter();
-        }
-      } else {
-        // after "broken", keep being funny
-        popHearts();
-        setStatus("Status: still broken… because I still love you too much 💘😄");
+      // if reaches 100 naturally (not spam), do a gentle "overcapacity" message
+      if (love >= 100){
+        setStatus("Status: ERROR — love exceeds capacity 💥💖 (but in a cute way)");
       }
     });
+
+    // start text
+    setStatus(messages[0]);
   </script>
 </body>
 </html>
