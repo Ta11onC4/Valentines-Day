@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Valentine's Day 💖</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: pink;
+      color: #800000;
+    }
+
+    header {
+      padding: 20px;
+    }
+
+    .hearts span {
+      font-size: 2rem;
+      animation: float 3s infinite;
+      display: inline-block;
+      margin: 0 5px;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #fff0f5;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: #800000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Happy Valentine's Day, My Love! ❤️</h1>
+    <p>Welcome to our special page 💘</p>
+  </header>
+
+  <div class="hearts">
+    <span>❤️</span>
+    <span>❤️</span>
+    <span>❤️</span>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="#">Home</a>
+    <a href="#">Memories</a>
+    <a href="#">Love</a>
+    <a href="#">Music</a>
+    <a href="#">Surprise</a>
+  </nav>
+</body>
+</html>
