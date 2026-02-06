@@ -3,26 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Music Player 🎵</title>
+  <title>Surprise 🎁</title>
   <style>
     :root{
+      --bg1:#fff0f5;
       --pink1:#ffccd9;
       --pink2:#ff99c8;
       --pink3:#ff4d94;
       --pink4:#ff1a75;
       --cream:#fff7fb;
       --wine:#800000;
-      --shadow2: 0 -6px 18px rgba(0,0,0,0.18);
+      --cardShadow: 0 12px 25px rgba(0,0,0,0.14);
+      --softBorder: 1px solid rgba(255,26,117,0.22);
     }
 
     body{
       margin:0;
       font-family: Arial, sans-serif;
-      background:#fff0f5;
+      background: var(--bg1);
       color: var(--wine);
       text-align:center;
-      padding-bottom: 160px; /* space for floating player + bottom nav */
       overflow-x:hidden;
+      padding-bottom: 80px; /* bottom nav */
     }
 
     header{
@@ -30,269 +32,237 @@
     }
 
     header h1{
-      color: var(--pink3);
       margin: 0 0 8px;
-    }
-
-    header p{
-      margin:0;
-      color:#9a0f2f;
-    }
-
-    /* Track list section */
-    .tracks-wrap{
-      width: min(920px, 92vw);
-      margin: 14px auto 0;
-      background: rgba(255,255,255,0.55);
-      border: 1px solid rgba(255,77,148,0.25);
-      border-radius: 16px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      padding: 14px 12px;
-      backdrop-filter: blur(6px);
-    }
-
-    .tracks-title{
-      font-weight: bold;
-      margin: 0 0 10px;
-      color:#b0123a;
+      color: var(--pink3);
       letter-spacing: 0.2px;
     }
 
-    .track-list{
+    header p{
+      margin: 0;
+      color:#9a0f2f;
+      line-height: 1.35;
+    }
+
+    /* Page "dissolve" transition */
+    .screen{
+      min-height: calc(100vh - 80px);
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 10px 14px 24px;
+      opacity: 1;
+      transition: opacity 700ms ease, filter 700ms ease, transform 700ms ease;
+    }
+
+    .screen.hidden{
+      display:none;
+    }
+
+    .screen.fade-out{
+      opacity: 0;
+      filter: blur(10px);
+      transform: scale(0.98);
+      pointer-events:none;
+    }
+
+    .card{
+      width: min(520px, 92vw);
+      background: rgba(255,255,255,0.6);
+      border: var(--softBorder);
+      border-radius: 18px;
+      box-shadow: var(--cardShadow);
+      padding: 18px 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    .question{
+      font-size: 1.25rem;
+      font-weight: bold;
+      color:#7a0012;
+      margin: 0 0 14px;
+    }
+
+    .choices{
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
-      text-align: left;
+      margin-top: 6px;
     }
 
-    .track{
+    .choice{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,204,217,0.65), rgba(255,153,200,0.50));
+      border: 1px solid rgba(255,77,148,0.22);
+      cursor: pointer;
+      user-select:none;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .choice:active{ transform: scale(0.99); }
+    .choice:hover{ box-shadow: 0 10px 18px rgba(0,0,0,0.10); }
+
+    .choice-left{
       display:flex;
       align-items:center;
       gap: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(255,204,217,0.45), rgba(255,153,200,0.35));
-      border: 1px solid rgba(255,77,148,0.20);
-      cursor:pointer;
-      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
-      min-width: 0; /* ✅ allows children to shrink instead of overflowing */
+      text-align:left;
+      min-width: 0;
     }
 
-    .track:active{ transform: scale(0.99); }
-
-    .track:hover{
-      box-shadow: 0 10px 20px rgba(0,0,0,0.10);
-      background: linear-gradient(135deg, rgba(255,204,217,0.70), rgba(255,153,200,0.55));
+    .choice-title{
+      font-weight: bold;
+      color:#7a0012;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .track.active{
-      border-color: rgba(255,26,117,0.55);
-      box-shadow: 0 10px 22px rgba(255,26,117,0.18);
-    }
-
-    .track img{
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      object-fit: cover;
-      border: 1px solid rgba(255,77,148,0.25);
-      background: var(--cream);
-      flex: 0 0 auto;
-    }
-
-    .track-meta{
+    .fake-checkbox{
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      background: rgba(255,255,255,0.75);
+      border: 2px solid rgba(255,26,117,0.30);
       display:flex;
-      flex-direction: column;
-      min-width: 0; /* ✅ critical for ellipsis to work */
-      flex: 1;
-    }
-
-    .track-name{
-      font-weight: bold;
-      color: #7a0012;
-      font-size: 0.95rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .track-artist{
-      font-size: 0.82rem;
-      color: #b0123a;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 2px;
-    }
-
-    .track-pill{
-      font-size: 0.72rem;
-      color: white;
-      background: var(--pink3);
-      padding: 5px 8px;
-      border-radius: 999px;
+      align-items:center;
+      justify-content:center;
       flex: 0 0 auto;
-      max-width: 84px;          /* ✅ stops it from running off */
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;  /* ✅ if it ever gets too tight */
-      box-shadow: 0 6px 14px rgba(255,77,148,0.25);
-    }
-
-    /* Floating player bar */
-    .floating-player{
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 62px;
-      width: min(920px, 96vw);
-      background: linear-gradient(135deg, rgba(255,204,217,0.95), rgba(255,153,200,0.92));
-      border: 1px solid rgba(255,26,117,0.35);
-      border-radius: 18px;
-      box-shadow: var(--shadow2);
-      padding: 10px 10px;
-      display: grid;
-      grid-template-columns: 58px 1fr auto;
-      gap: 10px;
-      align-items: center;
-      backdrop-filter: blur(8px);
-      z-index: 999;
-      min-width: 0;
-    }
-
-    .fp-art{
-      width: 58px;
-      height: 58px;
-      border-radius: 14px;
-      object-fit: cover;
-      border: 1px solid rgba(255,77,148,0.35);
-      background: var(--cream);
-    }
-
-    .fp-main{
-      text-align: left;
-      min-width: 0;
-    }
-
-    .fp-title{
-      font-weight: bold;
-      color: #7a0012;
-      font-size: 0.98rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 4px;
-    }
-
-    .fp-artist{
-      font-size: 0.82rem;
-      color: #b0123a;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 8px;
-    }
-
-    .fp-progress-row{
-      display: grid;
-      grid-template-columns: 44px 1fr 44px;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .fp-time{
-      font-size: 0.74rem;
-      color: #7a0012;
-      text-align: center;
-    }
-
-    .fp-bar{
-      height: 8px;
-      background: rgba(255,255,255,0.75);
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid rgba(255,77,148,0.25);
-      position: relative;
-    }
-
-    .fp-fill{
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--pink3), var(--pink4));
-      border-radius: 999px;
-    }
-
-    .fp-bar::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      cursor:pointer;
-    }
-
-    .fp-controls{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: flex-end;
-      flex-wrap: nowrap;
-    }
-
-    .btn{
-      border: none;
-      background: rgba(255,255,255,0.75);
-      border: 1px solid rgba(255,77,148,0.25);
-      color: #7a0012;
-      border-radius: 12px;
-      padding: 10px 10px;
       font-size: 1rem;
-      cursor: pointer;
-      transition: transform .12s ease, background .12s ease;
-      min-width: 44px;
-      min-height: 44px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+      color: white;
     }
 
-    .btn:hover{ background: rgba(255,255,255,0.9); }
-    .btn:active{ transform: scale(0.98); }
+    .choice.selected .fake-checkbox{
+      background: linear-gradient(135deg, var(--pink3), var(--pink4));
+      border-color: rgba(255,26,117,0.40);
+    }
 
-    .btn-primary{
+    .choice-note{
+      font-size: 0.9rem;
+      color:#9a0f2f;
+      margin-top: 10px;
+      line-height: 1.35;
+    }
+
+    /* NO screen */
+    .no-face{
+      font-size: 5rem;
+      margin: 0;
+    }
+    .no-text{
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 0;
+      color:#7a0012;
+    }
+    .no-sub{
+      margin: 0;
+      color:#9a0f2f;
+      line-height: 1.35;
+    }
+    .funny-btn{
+      margin-top: 10px;
+      border: none;
       background: linear-gradient(135deg, var(--pink3), var(--pink4));
       color: white;
-      border: 1px solid rgba(255,26,117,0.35);
-    }
-
-    .btn-primary:hover{ filter: brightness(1.05); }
-
-    .vol-wrap{
-      display: none;
-      align-items: center;
-      gap: 8px;
-      margin-left: 6px;
-      padding: 10px 10px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.65);
-      border: 1px solid rgba(255,77,148,0.20);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-    }
-
-    .vol-wrap label{
-      font-size: 0.8rem;
-      color:#7a0012;
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
       font-weight: bold;
+      box-shadow: 0 10px 18px rgba(255,26,117,0.20);
+      transition: transform 120ms ease, filter 120ms ease;
+      min-width: 180px;
+    }
+    .funny-btn:active{ transform: scale(0.98); }
+    .funny-btn:hover{ filter: brightness(1.05); }
+
+    /* LOCK screen */
+    .lock-title{
+      font-size: 1.2rem;
+      font-weight: bold;
+      color:#7a0012;
+      margin: 0 0 6px;
+    }
+    .lock-hint{
+      margin: 0 0 14px;
+      color:#9a0f2f;
+      line-height: 1.35;
     }
 
-    .vol-wrap input{ width: 90px; }
-
-    @media (min-width: 520px){
-      .track-list{ grid-template-columns: 1fr 1fr; }
-      .vol-wrap{ display: flex; }
-      body{ padding-bottom: 170px; }
+    .password-wrap{
+      display:flex;
+      gap: 8px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap: wrap;
+      margin-top: 6px;
     }
 
-    /* Small screen tweak so the pill never pushes layout */
-    @media (max-width: 380px){
-      .track-pill{ max-width: 70px; font-size: 0.68rem; padding: 5px 6px; }
+    .password-input{
+      width: min(280px, 75vw);
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,26,117,0.25);
+      outline: none;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.85);
+    }
+
+    .unlock-btn{
+      border: none;
+      background: linear-gradient(135deg, var(--pink3), var(--pink4));
+      color: white;
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 10px 18px rgba(255,26,117,0.20);
+      transition: transform 120ms ease, filter 120ms ease;
+      min-width: 110px;
+    }
+    .unlock-btn:active{ transform: scale(0.98); }
+    .unlock-btn:hover{ filter: brightness(1.05); }
+
+    .error{
+      margin: 12px 0 0;
+      color: #b00020;
+      font-weight: bold;
+      display:none;
+    }
+
+    /* REVEAL */
+    .reveal{
+      margin-top: 14px;
+      display:none;
+      text-align:left;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255,26,117,0.18);
+    }
+    .reveal h3{
+      margin: 0 0 8px;
+      color:#7a0012;
+    }
+    .reveal p{
+      margin: 6px 0;
+      color:#9a0f2f;
+      line-height: 1.35;
+    }
+
+    /* Confetti canvas */
+    .confetti{
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      z-index: 2000;
+      display:none;
     }
 
     /* Bottom nav */
@@ -317,42 +287,75 @@
 </head>
 <body>
   <header>
-    <h1>Music Player</h1>
-    <p>Old-school profile vibes — tap a track to play 💖</p>
+    <h1>Surprise</h1>
+    <p>One last thing… 💖</p>
   </header>
 
-  <div class="tracks-wrap">
-    <div class="tracks-title">Playlist</div>
-    <div class="track-list" id="trackList"></div>
-  </div>
+  <!-- Confetti -->
+  <canvas id="confetti" class="confetti"></canvas>
 
-  <!-- Floating Player Bar -->
-  <div class="floating-player" id="floatingPlayer" aria-label="Floating music player">
-    <img class="fp-art" id="fpArt" src="music/september.jpg" alt="Album art">
-    <div class="fp-main">
-      <div class="fp-title" id="fpTitle">Select a song</div>
-      <div class="fp-artist" id="fpArtist">—</div>
+  <!-- SCREEN 1: Question -->
+  <section id="screenAsk" class="screen">
+    <div class="card">
+      <div class="question">Will you be my Valentine?</div>
 
-      <div class="fp-progress-row">
-        <div class="fp-time" id="fpCurrent">0:00</div>
-        <div class="fp-bar" id="fpBar" title="Tap to seek">
-          <div class="fp-fill" id="fpFill"></div>
+      <div class="choices">
+        <div class="choice" id="choiceYes" role="button" tabindex="0">
+          <div class="choice-left">
+            <div class="fake-checkbox" aria-hidden="true"></div>
+            <div class="choice-title">Yes</div>
+          </div>
         </div>
-        <div class="fp-time" id="fpDuration">0:00</div>
+
+        <div class="choice" id="choiceNo" role="button" tabindex="0">
+          <div class="choice-left">
+            <div class="fake-checkbox" aria-hidden="true"></div>
+            <div class="choice-title">No</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="choice-note">Choose carefully… this is a very important question 😄</div>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: NO -->
+  <section id="screenNo" class="screen hidden">
+    <div class="card">
+      <p class="no-face">☹️</p>
+      <p class="no-text">Aw man</p>
+      <p class="no-sub" id="noSub">I’m gonna pretend I didn’t see that 😅</p>
+      <button class="funny-btn" id="tryAgainBtn">Okay okay, try again</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 3: LOCK -->
+  <section id="screenLock" class="screen hidden">
+    <div class="card">
+      <p class="lock-title">Locked Surprise 🔒</p>
+      <p class="lock-hint">Hint: our anniversary date (type it exactly)</p>
+
+      <div class="password-wrap">
+        <input
+          class="password-input"
+          id="password"
+          type="password"
+          placeholder="Enter the password…"
+          autocomplete="off"
+        />
+        <button class="unlock-btn" id="unlockBtn">Unlock</button>
+      </div>
+
+      <p class="error" id="errorMsg">Nope 😅 try again (hint: anniversary date)</p>
+
+      <div class="reveal" id="revealBox">
+        <h3>Our Date Info 💖</h3>
+        <p><strong>Anniversary:</strong> <span id="annivOut">[set this]</span></p>
+        <p><strong>Tonight’s plan:</strong> <span id="planOut">[set this]</span></p>
+        <p><strong>Message:</strong> <span id="msgOut">[set this]</span></p>
       </div>
     </div>
-
-    <div class="fp-controls">
-      <button class="btn" id="btnPrev" aria-label="Previous">⏮️</button>
-      <button class="btn btn-primary" id="btnPlay" aria-label="Play/Pause">▶️</button>
-      <button class="btn" id="btnNext" aria-label="Next">⏭️</button>
-
-      <div class="vol-wrap" title="Volume">
-        <label for="vol">VOL</label>
-        <input id="vol" type="range" min="0" max="1" step="0.01" value="0.9">
-      </div>
-    </div>
-  </div>
+  </section>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
@@ -363,194 +366,215 @@
     <a href="surprise.html">🎁 Surprise</a>
   </nav>
 
-  <audio id="audio" preload="metadata"></audio>
-
   <script>
-    // ====== YOUR PLAYLIST (paths fixed to include "music/") ======
-    const tracks = [
-      { title: "September", artist: "Earth, Wind & Fire", src: "music/september.mp3", img: "music/september.jpg" },
-      { title: "Everybody Wants To Rule The World", artist: "Tears For Fears", src: "music/tears.mp3", img: "music/tears.jpg" },
-      { title: "Last Night", artist: "Morgan Wallen", src: "music/lastnight.mp3", img: "music/lastnight.jpg" }
+    // ===========================
+    // ✅ EDIT THESE VALUES
+    // ===========================
+    // Password is whatever you want her to type.
+    // Example formats: "06/12/2016" or "06122016" or "June 12"
+    const CORRECT_PASSWORD = "06/12/2016";
+
+    // What shows after she unlocks:
+    const ANNIVERSARY_TEXT = "06/12/2016";
+    const PLAN_TEXT = "Dinner + dessert + a movie together";
+    const MESSAGE_TEXT = "I love you more than words. Happy Valentine’s Day ❤️";
+    // ===========================
+
+    const screenAsk = document.getElementById("screenAsk");
+    const screenNo = document.getElementById("screenNo");
+    const screenLock = document.getElementById("screenLock");
+
+    const choiceYes = document.getElementById("choiceYes");
+    const choiceNo = document.getElementById("choiceNo");
+
+    const tryAgainBtn = document.getElementById("tryAgainBtn");
+    const noSub = document.getElementById("noSub");
+
+    const password = document.getElementById("password");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const errorMsg = document.getElementById("errorMsg");
+    const revealBox = document.getElementById("revealBox");
+
+    const annivOut = document.getElementById("annivOut");
+    const planOut = document.getElementById("planOut");
+    const msgOut = document.getElementById("msgOut");
+
+    const confettiCanvas = document.getElementById("confetti");
+    const ctx = confettiCanvas.getContext("2d");
+
+    function resizeConfetti(){
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeConfetti);
+    resizeConfetti();
+
+    function dissolveTo(fromEl, toEl){
+      fromEl.classList.add("fade-out");
+      setTimeout(() => {
+        fromEl.classList.add("hidden");
+        fromEl.classList.remove("fade-out");
+        toEl.classList.remove("hidden");
+      }, 720);
+    }
+
+    function setSelected(which){
+      // Clear both
+      choiceYes.classList.remove("selected");
+      choiceNo.classList.remove("selected");
+      choiceYes.querySelector(".fake-checkbox").textContent = "";
+      choiceNo.querySelector(".fake-checkbox").textContent = "";
+
+      // Set selected
+      which.classList.add("selected");
+      which.querySelector(".fake-checkbox").textContent = "✓";
+    }
+
+    // --- YES path ---
+    function handleYes(){
+      setSelected(choiceYes);
+      // dissolve to lock screen
+      setTimeout(() => dissolveTo(screenAsk, screenLock), 200);
+      // focus password after transition
+      setTimeout(() => password.focus(), 950);
+    }
+
+    // --- NO path ---
+    function handleNo(){
+      setSelected(choiceNo);
+      setTimeout(() => dissolveTo(screenAsk, screenNo), 200);
+    }
+
+    choiceYes.addEventListener("click", handleYes);
+    choiceNo.addEventListener("click", handleNo);
+
+    // keyboard support
+    choiceYes.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") handleYes(); });
+    choiceNo.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") handleNo(); });
+
+    // Funny NO button: cycles messages
+    const funnyLines = [
+      "I’m gonna pretend I didn’t see that 😅",
+      "Wrong button, ma’am 😂",
+      "That button is broken… try the other one 😇",
+      "This page is now sad. Very sad. ☹️",
+      "Okay okay… I forgive you. Try again 💖"
     ];
-    // ============================================================
+    let funnyIndex = 0;
 
-    const audio = document.getElementById("audio");
-    const trackListEl = document.getElementById("trackList");
+    tryAgainBtn.addEventListener("click", () => {
+      funnyIndex = (funnyIndex + 1) % funnyLines.length;
+      noSub.textContent = funnyLines[funnyIndex];
 
-    const fpArt = document.getElementById("fpArt");
-    const fpTitle = document.getElementById("fpTitle");
-    const fpArtist = document.getElementById("fpArtist");
-
-    const fpCurrent = document.getElementById("fpCurrent");
-    const fpDuration = document.getElementById("fpDuration");
-    const fpFill = document.getElementById("fpFill");
-    const fpBar = document.getElementById("fpBar");
-
-    const btnPrev = document.getElementById("btnPrev");
-    const btnPlay = document.getElementById("btnPlay");
-    const btnNext = document.getElementById("btnNext");
-    const vol = document.getElementById("vol");
-
-    let currentIndex = -1;
-    let isPlaying = false;
-
-    function renderTrackList() {
-      trackListEl.innerHTML = "";
-      tracks.forEach((t, i) => {
-        const row = document.createElement("div");
-        row.className = "track";
-        row.setAttribute("role", "button");
-        row.setAttribute("tabindex", "0");
-        row.addEventListener("click", () => selectTrack(i, true));
-        row.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") selectTrack(i, true);
-        });
-
-        const img = document.createElement("img");
-        img.src = t.img || "music/september.jpg";
-        img.alt = "Album art";
-        img.onerror = () => { img.src = "music/september.jpg"; };
-
-        const meta = document.createElement("div");
-        meta.className = "track-meta";
-
-        const name = document.createElement("div");
-        name.className = "track-name";
-        name.textContent = t.title;
-
-        const artist = document.createElement("div");
-        artist.className = "track-artist";
-        artist.textContent = t.artist || "";
-
-        const pill = document.createElement("div");
-        pill.className = "track-pill";
-        pill.textContent = "PLAY";
-
-        meta.appendChild(name);
-        meta.appendChild(artist);
-
-        row.appendChild(img);
-        row.appendChild(meta);
-        row.appendChild(pill);
-
-        trackListEl.appendChild(row);
-      });
-    }
-
-    function setActiveRow() {
-      const rows = trackListEl.children;
-      for (let i = 0; i < rows.length; i++) {
-        rows[i].classList.toggle("active", i === currentIndex);
-        const pill = rows[i].querySelector(".track-pill");
-        if (pill) pill.textContent = (i === currentIndex && isPlaying) ? "PLAYING" : "PLAY";
+      // Send back to question after a couple clicks
+      if (funnyIndex === 0) {
+        // gentle dissolve back
+        dissolveTo(screenNo, screenAsk);
+        // clear selection
+        setTimeout(() => {
+          choiceYes.classList.remove("selected");
+          choiceNo.classList.remove("selected");
+          choiceYes.querySelector(".fake-checkbox").textContent = "";
+          choiceNo.querySelector(".fake-checkbox").textContent = "";
+        }, 800);
       }
+    });
+
+    // Unlock logic
+    function normalize(s){
+      return (s || "").trim();
     }
 
-    function selectTrack(index, autoplay) {
-      currentIndex = index;
-      const t = tracks[currentIndex];
+    function doUnlock(){
+      const entered = normalize(password.value);
+      if (entered === normalize(CORRECT_PASSWORD)) {
+        errorMsg.style.display = "none";
 
-      audio.src = t.src;
+        // Fill reveal content
+        annivOut.textContent = ANNIVERSARY_TEXT;
+        planOut.textContent = PLAN_TEXT;
+        msgOut.textContent = MESSAGE_TEXT;
 
-      fpTitle.textContent = t.title || "Unknown title";
-      fpArtist.textContent = t.artist || "—";
-
-      fpArt.src = t.img || "music/september.jpg";
-      fpArt.onerror = () => { fpArt.src = "music/september.jpg"; };
-
-      if (autoplay) {
-        audio.play().then(() => {
-          isPlaying = true;
-          btnPlay.textContent = "⏸️";
-          setActiveRow();
-        }).catch(() => {
-          isPlaying = false;
-          btnPlay.textContent = "▶️";
-          setActiveRow();
-        });
+        // Reveal + confetti
+        revealBox.style.display = "block";
+        launchConfetti();
       } else {
-        isPlaying = false;
-        btnPlay.textContent = "▶️";
-        setActiveRow();
+        errorMsg.style.display = "block";
+        revealBox.style.display = "none";
+        // little shake effect
+        password.animate(
+          [
+            { transform: "translateX(0px)" },
+            { transform: "translateX(-8px)" },
+            { transform: "translateX(8px)" },
+            { transform: "translateX(-6px)" },
+            { transform: "translateX(6px)" },
+            { transform: "translateX(0px)" },
+          ],
+          { duration: 420, easing: "ease-in-out" }
+        );
       }
     }
 
-    function togglePlay() {
-      if (currentIndex === -1) {
-        selectTrack(0, true);
-        return;
-      }
+    unlockBtn.addEventListener("click", doUnlock);
+    password.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doUnlock();
+    });
 
-      if (isPlaying) {
-        audio.pause();
-        isPlaying = false;
-        btnPlay.textContent = "▶️";
-      } else {
-        audio.play().then(() => {
-          isPlaying = true;
-          btnPlay.textContent = "⏸️";
-        }).catch(() => {
-          isPlaying = false;
-          btnPlay.textContent = "▶️";
+    // Confetti (simple + pretty)
+    let confettiPieces = [];
+    let confettiTimer = null;
+
+    function launchConfetti(){
+      confettiCanvas.style.display = "block";
+      confettiPieces = [];
+      const colors = ["#ff4d94", "#ff1a75", "#ffffff", "#ffd1e6", "#ff99c8"];
+
+      const count = 180;
+      for (let i = 0; i < count; i++){
+        confettiPieces.push({
+          x: Math.random() * confettiCanvas.width,
+          y: -20 - Math.random() * confettiCanvas.height * 0.3,
+          w: 6 + Math.random() * 8,
+          h: 8 + Math.random() * 10,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 2,
+          vy: 2 + Math.random() * 4,
+          rot: Math.random() * Math.PI,
+          vr: (Math.random() - 0.5) * 0.2
         });
       }
-      setActiveRow();
+
+      const start = performance.now();
+      const duration = 2200;
+
+      function frame(t){
+        const elapsed = t - start;
+        ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+
+        confettiPieces.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vr;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        });
+
+        // keep drawing
+        if (elapsed < duration){
+          requestAnimationFrame(frame);
+        } else {
+          ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+          confettiCanvas.style.display = "none";
+        }
+      }
+      requestAnimationFrame(frame);
     }
-
-    function nextTrack() {
-      if (tracks.length === 0) return;
-      const next = (currentIndex + 1) % tracks.length;
-      selectTrack(next, true);
-    }
-
-    function prevTrack() {
-      if (tracks.length === 0) return;
-      const prev = (currentIndex - 1 + tracks.length) % tracks.length;
-      selectTrack(prev, true);
-    }
-
-    function formatTime(seconds) {
-      if (!isFinite(seconds)) return "0:00";
-      const m = Math.floor(seconds / 60);
-      const s = Math.floor(seconds % 60).toString().padStart(2, "0");
-      return `${m}:${s}`;
-    }
-
-    audio.addEventListener("timeupdate", () => {
-      const dur = audio.duration || 0;
-      const cur = audio.currentTime || 0;
-
-      fpCurrent.textContent = formatTime(cur);
-      fpDuration.textContent = formatTime(dur);
-
-      const pct = dur ? (cur / dur) * 100 : 0;
-      fpFill.style.width = pct + "%";
-    });
-
-    fpBar.addEventListener("click", (e) => {
-      if (!audio.duration) return;
-      const rect = fpBar.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const pct = Math.max(0, Math.min(1, x / rect.width));
-      audio.currentTime = pct * audio.duration;
-    });
-
-    audio.addEventListener("ended", () => {
-      nextTrack();
-    });
-
-    audio.volume = parseFloat(vol.value);
-    vol.addEventListener("input", () => {
-      audio.volume = parseFloat(vol.value);
-    });
-
-    btnPlay.addEventListener("click", togglePlay);
-    btnNext.addEventListener("click", nextTrack);
-    btnPrev.addEventListener("click", prevTrack);
-
-    renderTrackList();
-    selectTrack(0, false);
-    setActiveRow();
   </script>
 </body>
 </html>
